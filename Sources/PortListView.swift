@@ -1,5 +1,9 @@
 import SwiftUI
 
+/// Фиксированная высота строки и сколько строк показывать без скролла.
+private let rowHeight: CGFloat = 54
+private let visibleRows = 5
+
 struct PortListView: View {
     @ObservedObject var model: PortViewModel
     @Environment(\.openWindow) private var openWindow
@@ -31,7 +35,8 @@ struct PortListView: View {
                         }
                     }
                 }
-                .frame(maxHeight: 360)
+                // Высота = число строк, но не больше visibleRows; дальше скролл.
+                .frame(height: CGFloat(min(model.processes.count, visibleRows)) * rowHeight)
             }
 
             Divider()
@@ -149,7 +154,7 @@ private struct ProcessRow: View {
             .onHover { hoveringKill = $0 }
         }
         .padding(.horizontal, 12)
-        .padding(.vertical, 6)
+        .frame(height: rowHeight)
         // Полная команда в тултипе; при отказе прав — сообщение вместо неё.
         .help(denied ? "Permission denied — процесс чужого пользователя или root" : process.command)
     }
